@@ -152,7 +152,6 @@ RESNET_URL = (
 
 def download_model(url, filename):
 
-
     if not os.path.exists(filename):
 
         with st.spinner(
@@ -160,13 +159,33 @@ def download_model(url, filename):
         ):
 
             response = requests.get(
-                url
+                url,
+                allow_redirects=True
             )
 
-            response.raise_for_status()
+
+            if response.status_code != 200:
+
+                st.error(
+                    f"""
+                    Model download failed
+
+                    File:
+                    {filename}
+
+                    Status:
+                    {response.status_code}
+
+                    URL:
+                    {url}
+                    """
+                )
+
+                st.stop()
 
 
-            with open(filename,"wb") as f:
+
+            with open(filename, "wb") as f:
 
                 f.write(
                     response.content
@@ -174,9 +193,6 @@ def download_model(url, filename):
 
 
     return filename
-
-
-
 
 # ============================================================
 # LOAD MODELS
